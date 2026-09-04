@@ -1,20 +1,20 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-
-dotenv.config();
+require("dotenv").config();
 
 const app = express();
 const port = 3000;
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("Database connection...");
-  })
-  .catch((err) => {
-    console.log("Error connecting to database", err.massage);
-  });
+const connectDB = async () => {
+  try {
+    mongoose.connect(process.env.MONGODB_URI);
+    console.log("MongoDB connected");
+  } catch (error) {
+    console.error("Fail to connect to MongoDB:", err.message);
+    process.exit(1);
+  }
+};
+connectDB();
 
 app.use(express.json());
 

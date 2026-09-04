@@ -10,9 +10,11 @@
   "author": "LouLi",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^9.9.4"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "dotenv": "^17.4.2"
+  }
 }
