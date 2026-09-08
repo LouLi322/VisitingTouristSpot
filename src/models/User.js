@@ -13,14 +13,14 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: [true, "email is required"],
+      required: [true, "Email is required"],
       unique: true,
       lowercase: true,
       trim: true,
     },
     password: {
       type: String,
-      required: [true, "password is required"],
+      required: [true, "Password is required"],
       minlength: [8, "Password must be at least 8 character"],
     },
     avatar: {
@@ -67,9 +67,7 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
   },
-  {
-    timestamps: true,
-  },
+  { timestamps: true },
 );
 
 const User = mongoose.model("User", userSchema);
