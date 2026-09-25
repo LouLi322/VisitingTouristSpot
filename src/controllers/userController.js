@@ -10,11 +10,33 @@ const generateAccessTokenAndRefreshTokens = async () => {};
 // !Access: Public
 const registerUser = async (req, res) => {
   //Get user details from request
+  const { username, email, password } = req.body;
   // Validations
+  if (!username || !email || !password) {
+    throw new ApiError(400, "All fields are required");
+  }
   // Check if user already exists
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new ApiError(409, "User with email already exists");
+  }
   // Create the User
+  const user = await User.create({
+    username: username.toLowerCase().trim(), //trim()?
+    email: email.toLowerCase().trim(), //trim()?
+    password,
+  });
   // remove password and refresh token from response
+  const createdUser = await User.findById(user._id).select(
+    "-password -refreshToken",
+  );
+  if (!createdUser) {
+    throw new Error("Error register user"); //400, 500
+  }
   // Return the response
+  return res
+    .status(201)
+    .json(new ApiResponse(201, createdUser, "User registered successfully"));
 };
 
 // !Desc: Login user and generate tokens
@@ -56,3 +78,5 @@ const requestPasswordReset = async (req, res) => {};
 // !route: POST /users/reset-password/:token
 // !Access: Private
 const resetPassword = async (req, res) => {};
+
+module.exports = { registerUser };
