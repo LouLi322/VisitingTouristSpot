@@ -1,13 +1,27 @@
+const JWT = require("jsonwebtoken");
 const User = require("../models/User");
 const ApiError = require("../utils/ApiError");
 const ApiResponse = require("../utils/ApiResponse");
 
-// !Internal utility function to generate JWT tokens
-const generateAccessTokenAndRefreshTokens = async () => {};
+// Internal utility function to generate JWT tokens
+const generateAccessTokenAndRefreshTokens = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
 
-// !Desc: Register a new user
-// !Route: POST /users/register
-// !Access: Public
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(500, "Error generating tokens");
+  }
+};
+
+// Desc: Register a new user
+// Route: POST /users/register
+// Access: Public
 const registerUser = async (req, res) => {
   //Get user details from request
   const { username, email, password } = req.body;
@@ -22,8 +36,8 @@ const registerUser = async (req, res) => {
   }
   // Create the User
   const user = await User.create({
-    username: username.toLowerCase().trim(), //trim()?
-    email: email.toLowerCase().trim(), //trim()?
+    username: username.toLowerCase(), //trim()?
+    email: email.toLowerCase(), //trim()?
     password,
   });
   // remove password and refresh token from response
