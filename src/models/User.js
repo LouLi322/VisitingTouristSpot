@@ -73,9 +73,8 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 //Pre-save hook to hash user password
-userSchema.pre("save", async function (next) {
-  // console.log(this);
-  if (!this.isModified("password")) return next();
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 10);
 });
 userSchema.methods.isPasswordCorrect = async function (password) {
