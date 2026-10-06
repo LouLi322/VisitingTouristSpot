@@ -101,8 +101,26 @@ const loginUser = async (req, res) => {
 
 // !Desc: Logout user and clear tokens
 // !Route: POST /api/users/logout
-// !Access: Public
-const logoutUser = async (req, res) => {};
+// !Access: Private
+const logoutUser = async (req, res) => {
+  await User.findByIdAndUpdate(
+    req.user._id,
+    { $set: { refreshToken: null } },
+    { new: true },
+  );
+  const cookieOptions = {
+    httpOnly: true,
+    sameSite: "strict",
+    secure: appConfig.nodeEnv === "production",
+    path: "/",
+    expires: new Date(0),
+  };
+  return res
+    .status(200)
+    .clearCookie("accessToken", cookieOptions)
+    .clearCookie("refreshToken", cookieOptions)
+    .json(new ApiResponse(200, {}, "User logged out successfully"));
+};
 
 // ?Desc: Refresh access token using refresh token
 // ?Route: POST /users/refresh-token
@@ -134,4 +152,4 @@ const requestPasswordReset = async (req, res) => {};
 // !Access: Private
 const resetPassword = async (req, res) => {};
 
-module.exports = { registerUser, loginUser };
+module.exports = { registerUser, loginUser, logoutUser };
