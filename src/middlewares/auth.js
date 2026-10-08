@@ -23,20 +23,6 @@ const verifyJWT = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    if (req.path === "/logout") {
-      const cookieOptions = {
-        httpOnly: true,
-        sameSite: "strict",
-        secure: appConfig.nodeEnv === "production",
-        path: "/",
-        expires: new Date(0),
-      };
-      res.clearCookie("accessToken", cookieOptions);
-      res.clearCookie("refreshToken", cookieOptions);
-      return res
-        .status(200)
-        .json({ success: true, message: "Logout successfully", data: {} });
-    }
     throw new ApiError(401, error?.message || "Invalid Access Token");
   }
 };

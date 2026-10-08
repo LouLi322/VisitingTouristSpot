@@ -54,9 +54,9 @@ const registerUser = async (req, res) => {
     .json(new ApiResponse(201, createdUser, "User registered successfully"));
 };
 
-// !Desc: Login user and generate tokens
-// !Route: POST /api/users/login
-// !Access: Public
+// Desc: Login user and generate tokens
+// Route: POST /api/users/login
+// Access: Public
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   if (!email) {
@@ -81,15 +81,14 @@ const loginUser = async (req, res) => {
   );
   //Set cookies
   const cookieOptions = {
-    //?
     httpOnly: true,
     sameSite: "strict",
     secure: appConfig.nodeEnv === "production",
   };
   return res
     .status(200)
-    .cookie("accessToken", accessToken, cookieOptions) //?
-    .cookie("refreshToken", refreshToken, cookieOptions) //?
+    .cookie("accessToken", accessToken, cookieOptions)
+    .cookie("refreshToken", refreshToken, cookieOptions)
     .json(
       new ApiResponse(
         200,
@@ -99,14 +98,14 @@ const loginUser = async (req, res) => {
     );
 };
 
-// !Desc: Logout user and clear tokens
-// !Route: POST /api/users/logout
-// !Access: Private
+// Desc: Logout user and clear tokens
+// Route: POST /api/users/logout
+// Access: Private
 const logoutUser = async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
     { $set: { refreshToken: null } },
-    { new: true },
+    { returnDocument: "after" }, //{ new: true } is deprecated
   );
   const cookieOptions = {
     httpOnly: true,
@@ -125,7 +124,12 @@ const logoutUser = async (req, res) => {
 // ?Desc: Refresh access token using refresh token
 // ?Route: POST /users/refresh-token
 // ?Access: Public
-const refreshAccessToken = async (req, res) => {};
+const refreshAccessToken = async (req, res) => {
+  try {
+    // console.log("req.cookies:", req.cookies);
+    // console.log("req.body:", req.body);
+  } catch (error) {}
+};
 
 // !Desc: Get user profile
 // !Route: GET /api/users/profile
@@ -152,4 +156,4 @@ const requestPasswordReset = async (req, res) => {};
 // !Access: Private
 const resetPassword = async (req, res) => {};
 
-module.exports = { registerUser, loginUser, logoutUser };
+module.exports = { registerUser, loginUser, logoutUser, refreshAccessToken };
