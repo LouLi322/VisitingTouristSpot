@@ -121,14 +121,50 @@ const logoutUser = async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged out successfully"));
 };
 
-// ?Desc: Refresh access token using refresh token
-// ?Route: POST /users/refresh-token
-// ?Access: Public
+// Desc: Refresh access token using refresh token
+// Route: POST /users/refresh-token
+// Access: Public
 const refreshAccessToken = async (req, res) => {
   try {
     // console.log("req.cookies:", req.cookies);
     // console.log("req.body:", req.body);
-  } catch (error) {}
+    const incomingRefreshToken =
+      req?.cookies?.refreshToken || req.body.refreshToken;
+    if (!incomingRefreshToken) {
+      throw new ApiError(401, "Refresh token is required");
+    }
+    const decodedToken = JWT.verify(
+      incomingRefreshToken,
+      appConfig.refreshTokenSecret,
+    );
+    const user = await User.findById(decodedToken._id);
+    if (!user) {
+      throw new ApiError(401, "Invalid refresh token");
+    }
+    if (incomingRefreshToken !== user.refreshToken) {
+      throw new ApiError(401, "Refresh token is required or used");
+    }
+    const { accessToken, refreshToken: newRefreshToken } =
+      await generateAccessTokenAndRefreshTokens(user?._id);
+    const cookieOptions = {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: appConfig.nodeEnv === "production",
+    };
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, cookieOptions)
+      .cookie("refreshToken", newRefreshToken, cookieOptions)
+      .json(
+        new ApiResponse(
+          200,
+          { accessToken, refreshAccessToken: newRefreshToken },
+          "Access token refreshed successfully",
+        ),
+      );
+  } catch (error) {
+    throw new ApiError(401, error?.message || "Invalid Refresh token");
+  }
 };
 
 // !Desc: Get user profile
