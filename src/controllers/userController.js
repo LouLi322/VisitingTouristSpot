@@ -177,10 +177,34 @@ const getUserProfile = async (req, res) => {};
 // !Access: Private
 const updateAccountDetails = async (req, res) => {};
 
-// !Desc: Change user password
-// !Route: PATCH /api/users/change-password
-// !Access: Private
-const changePassword = async (req, res) => {};
+// Desc: Change user password
+// Route: PATCH /api/users/change-password
+// Access: Private
+const changePassword = async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  if (!oldPassword || !newPassword) {
+    throw new ApiError(400, "OldPassword and newPassword are required");
+  }
+  const user = await User.findById(req.user._id);
+  const isPasswordValid = await user.isPasswordCorrect(oldPassword);
+  if (!isPasswordValid) {
+    throw new ApiError(400, "Invalid old password");
+  }
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+
+  // const updateUser = await User.findByIdAndUpdate(
+  //   req.user._id,
+  //   {
+  //     $set: { password: newPassword },
+  //   },
+  //   { returnDocument: "after" },
+  // ).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password changed successfully"));
+};
 
 // !Desc: Request password reset email
 // !Route: POST /api/users/request-reset-password
@@ -192,4 +216,11 @@ const requestPasswordReset = async (req, res) => {};
 // !Access: Private
 const resetPassword = async (req, res) => {};
 
-module.exports = { registerUser, loginUser, logoutUser, refreshAccessToken };
+module.exports = {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  getUserProfile,
+  changePassword,
+};
