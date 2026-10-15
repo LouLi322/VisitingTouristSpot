@@ -5,6 +5,8 @@ const {
   logoutUser,
   refreshAccessToken,
   changePassword,
+  getUserProfile,
+  updateAccountDetails,
 } = require("../controllers/userController");
 const verifyJWT = require("../middlewares/auth");
 const cookieParser = require("cookie-parser");
@@ -18,6 +20,8 @@ userRouter.post("/refresh-token", refreshAccessToken);
 
 //!Private routes
 userRouter.post("/logout", verifyJWT, logoutUser);
+userRouter.get("/profile", verifyJWT, getUserProfile);
 userRouter.patch("/change-password", verifyJWT, changePassword);
+userRouter.patch("/current", verifyJWT, updateAccountDetails);
 
 module.exports = userRouter;

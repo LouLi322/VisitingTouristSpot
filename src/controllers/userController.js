@@ -167,15 +167,37 @@ const refreshAccessToken = async (req, res) => {
   }
 };
 
-// !Desc: Get user profile
-// !Route: GET /api/users/profile
-// !Access: Private
-const getUserProfile = async (req, res) => {};
+// Desc: Get user profile
+// Route: GET /api/users/profile
+// Access: Private
+const getUserProfile = async (req, res) => {
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "User fetched successfully"));
+};
 
-// !Desc: Update user's account details
-// ?Route: PATCH /api/users/current //PATCH or PUT
-// !Access: Private
-const updateAccountDetails = async (req, res) => {};
+// Desc: Update user's account details
+// Route: PATCH /api/users/current //PATCH or PUT
+// Access: Private
+const updateAccountDetails = async (req, res) => {
+  const { username, email } = req.body;
+  if (!username || !email) {
+    throw new ApiError(400, "At least one field is required");
+  }
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        username: username || req.user.username,
+        email: email || req.user.email,
+      },
+    },
+    { returnDocument: "after" },
+  ).select("-password -refreshToken");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Account details updated successfully"));
+};
 
 // Desc: Change user password
 // Route: PATCH /api/users/change-password
@@ -223,4 +245,5 @@ module.exports = {
   refreshAccessToken,
   getUserProfile,
   changePassword,
+  updateAccountDetails,
 };
