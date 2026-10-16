@@ -22,6 +22,6 @@ userRouter.post("/refresh-token", refreshAccessToken);
 userRouter.post("/logout", verifyJWT, logoutUser);
 userRouter.get("/profile", verifyJWT, getUserProfile);
 userRouter.patch("/change-password", verifyJWT, changePassword);
-userRouter.patch("/current", verifyJWT, updateAccountDetails);
+userRouter.patch("/update-account", verifyJWT, updateAccountDetails);
 
 module.exports = userRouter;

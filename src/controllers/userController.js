@@ -177,7 +177,7 @@ const getUserProfile = async (req, res) => {
 };
 
 // Desc: Update user's account details
-// Route: PATCH /api/users/current //PATCH or PUT
+// Route: PATCH /api/users/update-account 
 // Access: Private
 const updateAccountDetails = async (req, res) => {
   const { username, email } = req.body;
