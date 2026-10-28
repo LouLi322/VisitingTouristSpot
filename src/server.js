@@ -1,9 +1,9 @@
-const express = require("express");
-const connectDB = require("./config/db");
-const userRouter = require("./routes/userRoutes");
-const cookieParser = require("cookie-parser");
-const { errorHandler, notFound } = require("./middlewares/errorHandler");
-require("dotenv").config();
+import express from "express";
+import connectDB from "./config/db.js";
+import userRouter from "./routes/userRoutes.js";
+import cookieParser from "cookie-parser";
+import { errorHandler, notFound } from "./middlewares/errorHandler.js";
+import "dotenv/config";
 
 const app = express();
 

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const attractionSchema = new mongoose.Schema({
   title: {
@@ -38,4 +38,4 @@ const attractionSchema = new mongoose.Schema({
 });
 
 const Attraction = mongoose.model("Attraction", attractionSchema);
-module.exports = Attraction;
+export default Attraction;

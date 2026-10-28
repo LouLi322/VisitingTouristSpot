@@ -1,8 +1,8 @@
-const JWT = require("jsonwebtoken");
-const User = require("../models/User");
-const ApiError = require("../utils/ApiError");
-const ApiResponse = require("../utils/ApiResponse");
-const appConfig = require("../config/appConfig");
+import JWT from "jsonwebtoken";
+import User from "../models/User.js";
+import ApiError from "../utils/ApiError.js";
+import ApiResponse from "../utils/ApiResponse.js";
+import appConfig from "../config/appConfig.js";
 
 // Internal utility function to generate JWT tokens
 const generateAccessTokenAndRefreshTokens = async (userId) => {
@@ -177,7 +177,7 @@ const getUserProfile = async (req, res) => {
 };
 
 // Desc: Update user's account details
-// Route: PATCH /api/users/update-account 
+// Route: PATCH /api/users/update-account
 // Access: Private
 const updateAccountDetails = async (req, res) => {
   const { username, email } = req.body;
@@ -238,7 +238,7 @@ const requestPasswordReset = async (req, res) => {};
 // !Access: Private
 const resetPassword = async (req, res) => {};
 
-module.exports = {
+export {
   registerUser,
   loginUser,
   logoutUser,

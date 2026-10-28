@@ -1,7 +1,7 @@
-const Attraction = require("../models/Attraction");
-const User = require("../models/User");
-const ApiError = require("../utils/ApiError");
-const ApiResponse = require("../utils/ApiResponse");
+import Attraction from "../models/Attraction.js";
+import User from "../models/User.js";
+import ApiError from "../utils/ApiError.js";
+import ApiResponse from "../utils/ApiResponse.js";
 
 // ?Desc: Add a new attraction
 // ?Route POST /attractions

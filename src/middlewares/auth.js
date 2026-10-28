@@ -1,8 +1,8 @@
-const JWT = require("jsonwebtoken");
-const User = require("../models/User");
-const ApiError = require("../utils/ApiError");
-const appConfig = require("../config/appConfig");
-const ApiResponse = require("../utils/ApiResponse");
+import JWT from "jsonwebtoken";
+import User from "../models/User.js";
+import ApiError from "../utils/ApiError.js";
+import appConfig from "../config/appConfig.js";
+import ApiResponse from "../utils/ApiResponse.js";
 
 const verifyJWT = async (req, res, next) => {
   try {
@@ -29,4 +29,4 @@ const verifyJWT = async (req, res, next) => {
 
 //?check out if the user is a admin?
 
-module.exports = verifyJWT;
+export default verifyJWT;

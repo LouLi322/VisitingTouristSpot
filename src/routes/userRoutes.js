@@ -1,5 +1,5 @@
-const express = require("express");
-const {
+import express from "express";
+import {
   registerUser,
   loginUser,
   logoutUser,
@@ -7,9 +7,9 @@ const {
   changePassword,
   getUserProfile,
   updateAccountDetails,
-} = require("../controllers/userController");
-const verifyJWT = require("../middlewares/auth");
-const cookieParser = require("cookie-parser");
+} from "../controllers/userController.js";
+import verifyJWT from "../middlewares/auth.js";
+import cookieParser from "cookie-parser";
 
 const userRouter = express.Router();
 
@@ -24,4 +24,4 @@ userRouter.get("/profile", verifyJWT, getUserProfile);
 userRouter.patch("/change-password", verifyJWT, changePassword);
 userRouter.patch("/update-account", verifyJWT, updateAccountDetails);
 
-module.exports = userRouter;
+export default userRouter;

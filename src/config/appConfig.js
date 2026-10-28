@@ -1,4 +1,4 @@
-require("dotenv").config();
+import "dotenv/config";
 
 const appConfig = {
   nodeEnv: process.env.NODE_ENV || "development",
@@ -8,4 +8,4 @@ const appConfig = {
   refreshTokenExpiry: process.env.REFRESH_TOKEN_EXPIRY,
 };
 
-module.exports = appConfig;
+export default appConfig;

@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-const JWT = require("jsonwebtoken");
-const appConfig = require("../config/appConfig");
+import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+import JWT from "jsonwebtoken";
+import appConfig from "../config/appConfig.js";
 
 //Schema
 const userSchema = new mongoose.Schema(
@@ -100,4 +100,4 @@ userSchema.methods.generateRefreshToken = function () {
 };
 
 const User = mongoose.model("User", userSchema);
-module.exports = User;
+export default User;

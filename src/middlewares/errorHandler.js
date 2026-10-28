@@ -1,5 +1,5 @@
-const appConfig = require("../config/appConfig");
-const ApiError = require("../utils/ApiError");
+import appConfig from "../config/appConfig.js";
+import ApiError from "../utils/ApiError.js";
 
 const errorHandler = (err, req, res, next) => {
   let error = err;
@@ -23,4 +23,4 @@ const notFound = (req, res, next) => {
   // next(error);
 };
 
-module.exports = { errorHandler, notFound };
+export { errorHandler, notFound };

@@ -6,4 +6,4 @@ class ApiResponse {
     this.data = data || null;
   }
 }
-module.exports = ApiResponse;
+export default ApiResponse;
