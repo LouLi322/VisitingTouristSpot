@@ -122,7 +122,7 @@ const logoutUser = async (req, res) => {
 };
 
 // Desc: Refresh access token using refresh token
-// Route: POST /users/refresh-token
+// Route: POST /api/users/refresh-token
 // Access: Public
 const refreshAccessToken = async (req, res) => {
   try {
