@@ -10,8 +10,8 @@ const errorHandler = (err, req, res, next) => {
   }
   const response = {
     success: false,
-    massage: error?.message,
-    error: error?.errors,
+    message: error?.message,
+    errors: error?.errors,
     stack: appConfig.nodeEnv !== "production" ? error.stack : undefined,
   };
   return res.status(error.statusCode).json(response);

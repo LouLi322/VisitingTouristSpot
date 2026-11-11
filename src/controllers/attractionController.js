@@ -4,18 +4,9 @@ import User from "../models/User.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
-// ?Desc: Add a new attraction with tags
-// ?Route POST /api/attractions
-// ?Access Private
-
-// ?Desc: Get nearby spots(place/attraction) with filtering
-// ?Route GET /api/attractions/nearby?radius=3000&maxResultCount=15&sortBy=views
-// ?Access Public
-const getNearbySpots = async (req, res) => {};
-
-// !Desc: Post nearby spots(place/attraction) with filtering
-// !Route Post /api/attractions/nearby
-// !Access Public
+// Desc: Post nearby spots(place/attraction) with filtering
+// Route Post /api/attractions/nearby
+// Access Public
 const postNearbySpots = async (req, res) => {
   const apiKey = appConfig.mapsApiKey;
   const {
@@ -42,21 +33,29 @@ const postNearbySpots = async (req, res) => {
       },
     },
   };
-  const headers = {
-    "Content-Type": "application/json",
-    "X-Goog-Api-Key": apiKey,
-    "X-Goog-FieldMask":
-      "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.primaryType,places.types,places.regularOpeningHours,places.photos",
-  };
-  // Only include SOLUTION_ID if it is defined in your environment
-  if (typeof SOLUTION_ID !== "undefined") {
-    headers["X-Goog-Maps-Solution-ID"] = SOLUTION_ID;
-  }
+  // const headers = {
+  //   "Content-Type": "application/json",
+  //   "X-Goog-Api-Key": apiKey,
+  //   "X-Goog-FieldMask":
+  //     "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.primaryType,places.types,places.regularOpeningHours,places.photos",
+  // };
+  // // Only include SOLUTION_ID if it is defined in your environment
+  // if (typeof SOLUTION_ID !== "undefined") {
+  //   headers["X-Goog-Maps-Solution-ID"] = SOLUTION_ID;
+  // }
   const response = await fetch(
     "https://places.googleapis.com/v1/places:searchNearby",
     {
       method: "POST",
-      headers,
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask":
+          "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.primaryType,places.types,places.regularOpeningHours,places.photos",
+        ...(typeof SOLUTION_ID !== "undefined" && {
+          "X-Goog-Maps-Solution-ID": SOLUTION_ID,
+        }),
+      },
       body: JSON.stringify(payload),
     },
   );
@@ -74,15 +73,70 @@ const postNearbySpots = async (req, res) => {
     );
 };
 
-// !Desc: Post a searching spot(place/attraction) with filtering, radius and sorting
-// !Route POST /api/attractions?search=cafe&tag=food&radius=3000&maxResultCount=15&sortBy=views
-// !Access Public
-const searchSpots = async (req, res) => {};
+// Desc: Post searching spots(place/attraction) with filtering, radius and sorting
+// Route POST /api/attractions/search?textquery=cafe&pagesize=15
+// Access Public
+const searchSpots = async (req, res) => {
+  const apiKey = appConfig.mapsApiKey;
+  const { textQuery, locationBias, pageSize = 15 } = req.body;
+  if (!textQuery || typeof textQuery !== "string") {
+    return res
+      .status(400)
+      .json({ success: false, error: "textQuery is required" });
+  }
+  const payload = {
+    textQuery,
+    pageSize: Math.min(pageSize, 20),
+  };
+  if (locationBias && locationBias.center) {
+    payload.locationBias = {
+      circle: {
+        center: {
+          latitude: locationBias.center.latitude,
+          longitude: locationBias.center.longitude,
+        },
+        radius: locationBias.radius || 3000.0,
+      },
+    };
+  }
+  //?create the utils function for the response?
+  const response = await fetch(
+    "https://places.googleapis.com/v1/places:searchText",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask":
+          "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.primaryType,places.types,places.regularOpeningHours,places.photos",
+        ...(typeof SOLUTION_ID !== "undefined" && {
+          "X-Goog-Maps-Solution-ID": SOLUTION_ID,
+        }),
+      },
+      body: JSON.stringify(payload),
+    },
+  );
+  const data = await response.json();
+  if (!response.ok) {
+    throw new ApiError(
+      response.status,
+      data.error?.message || "Error search spots",
+    );
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { data }, "The searched spots successfully"));
+};
 
-// !Desc: Get a spot(place/attraction) detail by ID
-// !Route GET /api/attractions/:attractionID
+// !Desc: Get all attractions
+// !Route GET /api/attractions
 // !Access Public
-const getSpotById = async (req, res) => {};
+const getAttractions = async (req, res) => {};
+
+// ?Desc: Add a new attraction with tags
+// ?Route POST /api/attractions
+// ?Access Private
+const postNewAttraction = async (req, res) => {};
 
 // !Desc: Update a attraction details
 // !Route PATCH /api/attractions/:attractionID
@@ -97,7 +151,7 @@ const deleteAttraction = async (req, res) => {};
 export {
   postNearbySpots,
   searchSpots,
-  getSpotById,
+  getAttractions,
   updateAttraction,
   deleteAttraction,
 };
