@@ -33,16 +33,6 @@ const postNearbySpots = async (req, res) => {
       },
     },
   };
-  // const headers = {
-  //   "Content-Type": "application/json",
-  //   "X-Goog-Api-Key": apiKey,
-  //   "X-Goog-FieldMask":
-  //     "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.primaryType,places.types,places.regularOpeningHours,places.photos",
-  // };
-  // // Only include SOLUTION_ID if it is defined in your environment
-  // if (typeof SOLUTION_ID !== "undefined") {
-  //   headers["X-Goog-Maps-Solution-ID"] = SOLUTION_ID;
-  // }
   const response = await fetch(
     "https://places.googleapis.com/v1/places:searchNearby",
     {
@@ -80,9 +70,7 @@ const searchSpots = async (req, res) => {
   const apiKey = appConfig.mapsApiKey;
   const { textQuery, locationBias, pageSize = 15 } = req.body;
   if (!textQuery || typeof textQuery !== "string") {
-    return res
-      .status(400)
-      .json({ success: false, error: "textQuery is required" });
+    throw new ApiError(400, "the textQuery is required");
   }
   const payload = {
     textQuery,
@@ -99,7 +87,6 @@ const searchSpots = async (req, res) => {
       },
     };
   }
-  //?create the utils function for the response?
   const response = await fetch(
     "https://places.googleapis.com/v1/places:searchText",
     {
@@ -128,10 +115,21 @@ const searchSpots = async (req, res) => {
     .json(new ApiResponse(200, { data }, "The searched spots successfully"));
 };
 
-// !Desc: Get all attractions
-// !Route GET /api/attractions
-// !Access Public
-const getAttractions = async (req, res) => {};
+// Desc: Get all attractions
+// Route GET /api/attractions
+// Access Public
+const getAttractions = async (req, res) => {
+  const docs = await Attraction.find({}).sort({ createdAt: -1 }).lean();
+  const attractions = docs.map((doc) => ({
+    ...doc,
+    id: doc._id.toString(),
+  }));
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { attractions }, "Attractions fetched successfully"),
+    );
+};
 
 // ?Desc: Add a new attraction with tags
 // ?Route POST /api/attractions

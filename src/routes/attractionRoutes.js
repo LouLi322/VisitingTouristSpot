@@ -11,6 +11,7 @@ import verifyJWT from "../middlewares/auth.js";
 const attractionRouter = express.Router();
 
 //!Public routes
+attractionRouter.get("/", getAttractions);
 attractionRouter.post("/nearby", postNearbySpots);
 attractionRouter.post("/search", searchSpots);
 //!Private routes
